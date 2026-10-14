@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dko6g26is8q33"
+path="res://.godot/imported/Genio.mp3-643fe7b5f3bf2c2ff0798fc0aea553cb.mp3str"
+
+[deps]
+
+source_file="res://recursos, GENIOS/sonidos/Genio.mp3"
+dest_files=["res://.godot/imported/Genio.mp3-643fe7b5f3bf2c2ff0798fc0aea553cb.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

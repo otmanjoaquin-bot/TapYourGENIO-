@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://dh13q4d7mn2w4"
+path="res://.godot/imported/audioparagolpedetungsahur.mp3-a91f7d87190159aba69650e89ed13de2.mp3str"
+
+[deps]
+
+source_file="res://recursos, GENIOS/sonidos/audioparagolpedetungsahur.mp3"
+dest_files=["res://.godot/imported/audioparagolpedetungsahur.mp3-a91f7d87190159aba69650e89ed13de2.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

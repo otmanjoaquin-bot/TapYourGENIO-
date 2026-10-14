@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cipbnp4syvhcd"
+path="res://.godot/imported/explosion de la tnt.mp3-b83c19b45c72bdc0bf91f84d44bc362a.mp3str"
+
+[deps]
+
+source_file="res://recursos, GENIOS/sonidos/explosion de la tnt.mp3"
+dest_files=["res://.godot/imported/explosion de la tnt.mp3-b83c19b45c72bdc0bf91f84d44bc362a.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
