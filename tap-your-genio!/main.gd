@@ -64,13 +64,13 @@ var nfts := [
 	{"id": 16, "name": "Genio 16", "price": 150000, "file": "16-genio tierra prometida.jpg"}
 ]
 var achievements := [
-	{"id": 1, "points": 10, "name": "Primeros 10", "image": "1-logro 10.jpg"},
-	{"id": 2, "points": 100, "name": "Centenario", "image": "2-logro 100.jpg"},
-	{"id": 3, "points": 1000, "name": "Mil puntos", "image": "3-logro 1000.jpg"},
-	{"id": 7, "points": 3000, "name": "Genio 16: 3000 puntos", "nft_id": 16, "image": "3-logro 1000.jpg"},
-	{"id": 4, "points": 10000, "name": "Diez mil", "image": "4-logro 10000.jpg"},
-	{"id": 5, "points": 100000, "name": "Cien mil", "image": "5-logro 100000.jpg"},
-	{"id": 6, "points": 1000000, "name": "Un millón", "image": "6-logro 1000000.jpg"}
+	{"id": 1, "points": 10, "description": "Consigue 10 GenioPuntos.", "image": "1-logro 10.jpg"},
+	{"id": 2, "points": 100, "description": "Consigue 100 GenioPuntos.", "image": "2-logro 100.jpg"},
+	{"id": 3, "points": 1000, "description": "Consigue 1000 GenioPuntos.", "image": "3-logro 1000.jpg"},
+	{"id": 7, "points": 3000, "description": "Consigue 3000 GenioPuntos usando el NFT Genio 16.", "nft_id": 16, "image": "3-logro 1000.jpg"},
+	{"id": 4, "points": 10000, "description": "Consigue 10000 GenioPuntos.", "image": "4-logro 10000.jpg"},
+	{"id": 5, "points": 100000, "description": "Consigue 100000 GenioPuntos.", "image": "5-logro 100000.jpg"},
+	{"id": 6, "points": 1000000, "description": "Consigue 1000000 GenioPuntos.", "image": "6-logro 1000000.jpg"}
 ]
 
 func _ready() -> void:
@@ -199,6 +199,18 @@ func _build_game() -> void:
 	achievements_button.custom_minimum_size = Vector2(160, 64)
 	achievements_button.pressed.connect(_show_achievements)
 	nav_row.add_child(achievements_button)
+
+	# Herramienta local de desarrollo: solo aparece si el entorno la habilita.
+	if OS.get_environment("TAPYOURGENIO_DEV_MODE") == "1":
+		var dev_button = _make_button("+1000 DEV", 16)
+		dev_button.custom_minimum_size = Vector2(130, 64)
+		dev_button.tooltip_text = "Añadir 1000 puntos (modo desarrollo local)"
+		dev_button.pressed.connect(func():
+			points += 1000
+			_check_achievements()
+			_update_counter()
+		)
+		nav_row.add_child(dev_button)
 
 	status_label = Label.new()
 	status_label.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
@@ -417,9 +429,13 @@ func _refresh_achievements_view() -> void:
 		info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_child(info)
 		var title = Label.new()
-		title.text = str(item.name) + " — " + str(item.points) + " puntos"
+		title.text = "Logro " + str(item.id)
 		title.add_theme_font_size_override("font_size", 20)
 		info.add_child(title)
+		var desc = Label.new()
+		desc.text = str(item.get("description", "Completa el objetivo de este logro."))
+		desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		info.add_child(desc)
 		var state = Label.new()
 		state.text = "¡DESBLOQUEADO!" if achievements_unlocked.has(int(item.id)) else "Bloqueado"
 		info.add_child(state)
@@ -611,7 +627,7 @@ func _show_achievement(item: Dictionary) -> void:
 	title.add_theme_color_override("font_color", Color("#ffe66d"))
 	text_col.add_child(title)
 	var desc = Label.new()
-	desc.text = str(item.name) + "\n" + str(item.points) + " puntos"
+	desc.text = "Logro " + str(item.id) + "\n" + str(item.get("description", "Completa el objetivo de este logro."))
 	text_col.add_child(desc)
 	achievement_tween = create_tween()
 	achievement_tween.set_parallel(true)
