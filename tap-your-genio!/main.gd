@@ -67,10 +67,10 @@ var achievements := [
 	{"id": 1, "points": 10, "name": "Primeros 10", "image": "1-logro 10.jpg"},
 	{"id": 2, "points": 100, "name": "Centenario", "image": "2-logro 100.jpg"},
 	{"id": 3, "points": 1000, "name": "Mil puntos", "image": "3-logro 1000.jpg"},
+	{"id": 7, "points": 3000, "name": "Genio 16: 3000 puntos", "nft_id": 16, "image": "3-logro 1000.jpg"},
 	{"id": 4, "points": 10000, "name": "Diez mil", "image": "4-logro 10000.jpg"},
 	{"id": 5, "points": 100000, "name": "Cien mil", "image": "5-logro 100000.jpg"},
-	{"id": 6, "points": 1000000, "name": "Un millón", "image": "6-logro 1000000.jpg"},
-	{"id": 7, "points": 3000, "name": "Genio 16: 3000 puntos", "nft_id": 16, "image": "3-logro 1000.jpg"}
+	{"id": 6, "points": 1000000, "name": "Un millón", "image": "6-logro 1000000.jpg"}
 ]
 
 func _ready() -> void:
