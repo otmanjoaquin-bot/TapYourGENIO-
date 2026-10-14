@@ -142,124 +142,167 @@ func _build_game() -> void:
 	game_layer = Control.new()
 	game_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(game_layer)
-	var background = ColorRect.new()
-	background.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	background.color = Color("#111323")
-	game_layer.add_child(background)
-	var root = VBoxContainer.new()
-	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	root.add_theme_constant_override("separation", 10)
-	root.add_theme_constant_override("margin_left", 18)
-	root.add_theme_constant_override("margin_right", 18)
-	root.add_theme_constant_override("margin_top", 14)
-	root.add_theme_constant_override("margin_bottom", 14)
-	game_layer.add_child(root)
-	var top = HBoxContainer.new()
-	root.add_child(top)
-	var heading = Label.new()
-	heading.text = "TAP YOUR GENIO!"
-	heading.add_theme_font_size_override("font_size", 28)
-	heading.add_theme_color_override("font_color", Color("#ffe66d"))
-	top.add_child(heading)
-	var spacer = Control.new()
-	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	top.add_child(spacer)
-	var back = _make_button("MENÚ", 16)
-	back.pressed.connect(_show_menu)
-	top.add_child(back)
-	points_label = Label.new()
-	points_label.text = "GENIOPUNTOS: 0"
-	points_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	points_label.add_theme_font_size_override("font_size", 30)
-	points_label.add_theme_color_override("font_color", Color("#ffffff"))
-	root.add_child(points_label)
-	status_label = Label.new()
-	status_label.text = "Por click: 1  |  Multiplicador: x1"
-	status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	root.add_child(status_label)
-	main_area = HBoxContainer.new()
-	main_area.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	main_area.add_theme_constant_override("separation", 16)
-	root.add_child(main_area)
-	# Character on the left
-	var character_panel = PanelContainer.new()
-	character_panel.custom_minimum_size = Vector2(440, 0)
-	main_area.add_child(character_panel)
-	var character_col = VBoxContainer.new()
-	character_col.alignment = BoxContainer.ALIGNMENT_CENTER
-	character_col.add_theme_constant_override("separation", 12)
-	character_panel.add_child(character_col)
-	var char_title = Label.new()
-	char_title.text = "¡TOCÁ AL GENIO!"
-	char_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	character_col.add_child(char_title)
 	click_button = TextureButton.new()
+	click_button.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	click_button.texture_normal = genio_texture
 	click_button.texture_hover = genio_texture
 	click_button.texture_pressed = genio_texture
-	click_button.custom_minimum_size = Vector2(300, 300)
-	click_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	click_button.stretch_mode = TextureButton.STRETCH_SCALE
 	click_button.pressed.connect(_on_genio_click)
-	character_col.add_child(click_button)
-	equipped_nft_label = Label.new()
-	equipped_nft_label.text = "NFT equipado: Genio"
-	equipped_nft_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	character_col.add_child(equipped_nft_label)
+	game_layer.add_child(click_button)
+
+	var hud = PanelContainer.new()
+	hud.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	hud.offset_left = 12
+	hud.offset_top = 12
+	hud.offset_right = -12
+	hud.offset_bottom = 76
+	hud.mouse_filter = Control.MOUSE_FILTER_PASS
+	game_layer.add_child(hud)
+	var nav = HBoxContainer.new()
+	nav.add_theme_constant_override("separation", 10)
+	hud.add_child(nav)
+	var heading = Label.new()
+	heading.text = "TAP YOUR GENIO!"
+	heading.add_theme_font_size_override("font_size", 22)
+	heading.add_theme_color_override("font_color", Color("#ffe66d"))
+	nav.add_child(heading)
+	var gap = Control.new()
+	gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	nav.add_child(gap)
+	points_label = Label.new()
+	points_label.text = "GENIOPUNTOS: 0"
+	points_label.add_theme_font_size_override("font_size", 20)
+	points_label.add_theme_color_override("font_color", Color.WHITE)
+	nav.add_child(points_label)
+	var shop_button = _make_button("TIENDA", 15)
+	shop_button.pressed.connect(_show_shop)
+	nav.add_child(shop_button)
+	var achievements_button = _make_button("LOGROS", 15)
+	achievements_button.pressed.connect(_show_achievements)
+	nav.add_child(achievements_button)
+	var menu_button = _make_button("MENÚ", 15)
+	menu_button.pressed.connect(_show_menu)
+	nav.add_child(menu_button)
+
+	status_label = Label.new()
+	status_label.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
+	status_label.offset_left = 12
+	status_label.offset_top = -42
+	status_label.offset_right = -12
+	status_label.offset_bottom = -10
+	status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	status_label.add_theme_font_size_override("font_size", 16)
+	status_label.add_theme_color_override("font_color", Color.WHITE)
+	status_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	game_layer.add_child(status_label)
+
 	owned_tung_button = TextureButton.new()
 	owned_tung_button.texture_normal = tungs_texture
 	owned_tung_button.texture_hover = tungs_texture
 	owned_tung_button.texture_pressed = tungs_texture
-	owned_tung_button.custom_minimum_size = Vector2(58, 58)
+	owned_tung_button.custom_minimum_size = Vector2(86, 86)
 	owned_tung_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-	owned_tung_button.tooltip_text = "Tungtungsahur: personaje comprado"
+	owned_tung_button.tooltip_text = "Tungtungsahur"
+	owned_tung_button.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	owned_tung_button.position = Vector2(-108, 104)
 	owned_tung_button.visible = false
+	owned_tung_button.z_index = 5
 	owned_tung_button.pressed.connect(func(): _play(tungs_player))
-	character_col.add_child(owned_tung_button)
-	var char_help = Label.new()
-	char_help.text = "Hacé click en el NFT para ganar puntos"
-	char_help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	char_help.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	character_col.add_child(char_help)
-	# Store in the middle
-	var shop_panel = PanelContainer.new()
-	shop_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	shop_panel.custom_minimum_size = Vector2(520, 0)
-	main_area.add_child(shop_panel)
-	var shop_col = VBoxContainer.new()
-	shop_col.add_theme_constant_override("separation", 8)
-	shop_panel.add_child(shop_col)
+	game_layer.add_child(owned_tung_button)
+
+	var shop_overlay = ColorRect.new()
+	shop_overlay.name = "ShopOverlay"
+	shop_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	shop_overlay.color = Color(0.035, 0.035, 0.09, 0.96)
+	shop_overlay.visible = false
+	shop_overlay.z_index = 10
+	game_layer.add_child(shop_overlay)
+	var shop_root = VBoxContainer.new()
+	shop_root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	shop_root.offset_left = 28
+	shop_root.offset_top = 22
+	shop_root.offset_right = -28
+	shop_root.offset_bottom = -22
+	shop_root.add_theme_constant_override("separation", 12)
+	shop_overlay.add_child(shop_root)
+	var shop_header = HBoxContainer.new()
+	shop_root.add_child(shop_header)
 	var shop_title = Label.new()
 	shop_title.text = "TIENDA"
-	shop_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	shop_title.add_theme_font_size_override("font_size", 24)
-	shop_col.add_child(shop_title)
+	shop_title.add_theme_font_size_override("font_size", 30)
+	shop_title.add_theme_color_override("font_color", Color("#ffe66d"))
+	shop_header.add_child(shop_title)
+	var shop_spacer = Control.new()
+	shop_spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	shop_header.add_child(shop_spacer)
+	var back_from_shop = _make_button("VOLVER AL JUEGO", 15)
+	back_from_shop.pressed.connect(_show_gameplay)
+	shop_header.add_child(back_from_shop)
 	var tabs = HBoxContainer.new()
-	shop_col.add_child(tabs)
+	tabs.add_theme_constant_override("separation", 10)
+	shop_root.add_child(tabs)
 	var upgrades_tab = _make_button("INCREMENTADORES", 14)
 	upgrades_tab.pressed.connect(func(): current_tab = "Incrementadores"; _refresh_store())
 	tabs.add_child(upgrades_tab)
 	var nfts_tab = _make_button("GENIOS (NFT)", 14)
 	nfts_tab.pressed.connect(func(): current_tab = "GENIOS"; _refresh_store())
 	tabs.add_child(nfts_tab)
-	var achievements_tab = _make_button("LOGROS", 14)
-	achievements_tab.pressed.connect(func(): current_tab = "LOGROS"; _refresh_store())
-	tabs.add_child(achievements_tab)
-	var scroll = ScrollContainer.new()
-	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	shop_col.add_child(scroll)
+	var shop_scroll = ScrollContainer.new()
+	shop_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	shop_root.add_child(shop_scroll)
 	store_list = VBoxContainer.new()
 	store_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	store_list.add_theme_constant_override("separation", 8)
-	scroll.add_child(store_list)
+	store_list.add_theme_constant_override("separation", 10)
+	shop_scroll.add_child(store_list)
+
+	var achievements_overlay = ColorRect.new()
+	achievements_overlay.name = "AchievementsOverlay"
+	achievements_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	achievements_overlay.color = Color(0.035, 0.035, 0.09, 0.97)
+	achievements_overlay.visible = false
+	achievements_overlay.z_index = 11
+	game_layer.add_child(achievements_overlay)
+	var achievements_root = VBoxContainer.new()
+	achievements_root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	achievements_root.offset_left = 28
+	achievements_root.offset_top = 22
+	achievements_root.offset_right = -28
+	achievements_root.offset_bottom = -22
+	achievements_root.add_theme_constant_override("separation", 12)
+	achievements_overlay.add_child(achievements_root)
+	var achievements_header = HBoxContainer.new()
+	achievements_root.add_child(achievements_header)
+	var achievements_title = Label.new()
+	achievements_title.text = "LOGROS"
+	achievements_title.add_theme_font_size_override("font_size", 30)
+	achievements_title.add_theme_color_override("font_color", Color("#ffe66d"))
+	achievements_header.add_child(achievements_title)
+	var achievements_spacer = Control.new()
+	achievements_spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	achievements_header.add_child(achievements_spacer)
+	var back_from_achievements = _make_button("VOLVER AL JUEGO", 15)
+	back_from_achievements.pressed.connect(_show_gameplay)
+	achievements_header.add_child(back_from_achievements)
+	var achievements_scroll = ScrollContainer.new()
+	achievements_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	achievements_root.add_child(achievements_scroll)
+	var achievements_list = VBoxContainer.new()
+	achievements_list.name = "AchievementsList"
+	achievements_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	achievements_list.add_theme_constant_override("separation", 10)
+	achievements_scroll.add_child(achievements_list)
+
 	achievement_popup = PanelContainer.new()
 	achievement_popup.visible = false
 	achievement_popup.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
-	achievement_popup.position = Vector2(-190, 65)
+	achievement_popup.position = Vector2(-190, 85)
 	achievement_popup.custom_minimum_size = Vector2(380, 125)
-	achievement_popup.z_index = 20
+	achievement_popup.z_index = 30
 	game_layer.add_child(achievement_popup)
 	_update_equipped_nft()
 	_refresh_store()
+	_refresh_achievements_view()
 	_update_counter()
 
 func _make_button(text_value: String, font_size: int = 18) -> Button:
@@ -287,12 +330,78 @@ func _show_menu() -> void:
 		video_player.play()
 
 func _start_game() -> void:
-	_play(sound_player)
 	game_started = true
 	menu_layer.visible = false
 	game_layer.visible = true
-	video_player.stop()
+	if video_player:
+		video_player.stop()
+	_show_gameplay()
+
+func _show_gameplay() -> void:
+	if not is_instance_valid(game_layer):
+		return
+	game_layer.get_node("ShopOverlay").visible = false
+	game_layer.get_node("AchievementsOverlay").visible = false
+	click_button.visible = true
+	if is_instance_valid(owned_tung_button):
+		owned_tung_button.visible = tung_count > 0
+	if is_instance_valid(points_label):
+		points_label.get_parent().visible = true
+	if is_instance_valid(status_label):
+		status_label.visible = true
+
+func _show_shop() -> void:
+	if not game_started:
+		return
+	click_button.visible = false
+	owned_tung_button.visible = false
+	points_label.get_parent().visible = false
+	status_label.visible = false
+	game_layer.get_node("ShopOverlay").visible = true
+	game_layer.get_node("AchievementsOverlay").visible = false
+	current_tab = "Incrementadores"
 	_refresh_store()
+
+func _show_achievements() -> void:
+	if not game_started:
+		return
+	click_button.visible = false
+	owned_tung_button.visible = false
+	points_label.get_parent().visible = false
+	status_label.visible = false
+	game_layer.get_node("ShopOverlay").visible = false
+	game_layer.get_node("AchievementsOverlay").visible = true
+	_refresh_achievements_view()
+
+func _refresh_achievements_view() -> void:
+	if not is_instance_valid(game_layer):
+		return
+	var list = game_layer.find_child("AchievementsList", true, false)
+	if list == null:
+		return
+	for child in list.get_children():
+		child.queue_free()
+	for item in achievements:
+		var row = HBoxContainer.new()
+		row.add_theme_constant_override("separation", 14)
+		list.add_child(row)
+		var icon = TextureRect.new()
+		icon.custom_minimum_size = Vector2(92, 92)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.texture = load(ACH_DIR + str(item.id) + "-logro " + str(item.points) + ".jpg")
+		icon.modulate = Color.WHITE if achievements_unlocked.has(int(item.id)) else Color(0.28, 0.28, 0.32, 1.0)
+		row.add_child(icon)
+		var info = VBoxContainer.new()
+		info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(info)
+		var title = Label.new()
+		title.text = str(item.name) + " — " + str(item.points) + " puntos"
+		title.add_theme_font_size_override("font_size", 20)
+		info.add_child(title)
+		var state = Label.new()
+		state.text = "¡DESBLOQUEADO!" if achievements_unlocked.has(int(item.id)) else "Bloqueado"
+		info.add_child(state)
 
 func _on_genio_click() -> void:
 	if not game_started:
@@ -389,29 +498,6 @@ func _refresh_store() -> void:
 				buy.disabled = points < int(item.price)
 			buy.pressed.connect(func(): _on_nft_action(item))
 			row.add_child(buy)
-	elif current_tab == "LOGROS":
-		for item in achievements:
-			var row = HBoxContainer.new()
-			store_list.add_child(row)
-			var icon = TextureRect.new()
-			icon.custom_minimum_size = Vector2(78, 78)
-			icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			icon.texture = load(ACH_DIR + str(item.id) + "-logro " + str(item.points) + ".jpg")
-			row.add_child(icon)
-			var info = VBoxContainer.new()
-			info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			row.add_child(info)
-			var title = Label.new()
-			title.text = str(item.name) + " (" + str(item.points) + ")"
-			info.add_child(title)
-			var state = Label.new()
-			state.text = "¡DESBLOQUEADO!" if achievements_unlocked.has(int(item.id)) else "Bloqueado"
-			info.add_child(state)
-			if achievements_unlocked.has(int(item.id)):
-				icon.modulate = Color.WHITE
-			else:
-				icon.modulate = Color(0.28, 0.28, 0.32, 1.0)
 
 func _upgrade_owned(kind: String) -> int:
 	if kind == "tung":
