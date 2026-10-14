@@ -120,10 +120,12 @@ func _make_audio_players() -> void:
 	if background_audio:
 		background_audio_player.stream = background_audio
 		background_audio_player.volume_db = -24.0
-		background_audio_player.finished.connect(func():
-			if selected_nft_id == 16 and not background_audio_player.playing:
-				background_audio_player.play()
-		)
+		background_audio_player.finished.connect(_on_genio16_audio_finished)
+		_sync_genio16_audio()
+
+func _on_genio16_audio_finished() -> void:
+	if selected_nft_id == 16 and is_instance_valid(background_audio_player):
+		background_audio_player.play()
 
 func _play(player: AudioStreamPlayer) -> void:
 	if player.stream:
@@ -534,11 +536,16 @@ func _refresh_store() -> void:
 			var row = HBoxContainer.new()
 			row.add_theme_constant_override("separation", 10)
 			store_list.add_child(row)
+			# Todas las miniaturas usan el mismo marco; cada imagen conserva su proporción.
 			var icon = TextureButton.new()
-			icon.custom_minimum_size = Vector2(80, 80)
-			icon.size = Vector2(80, 80)
+			icon.custom_minimum_size = Vector2(96, 96)
+			icon.size = Vector2(96, 96)
+			icon.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+			icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 			icon.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 			icon.texture_normal = load(NFT_DIR + str(item.file))
+			icon.texture_hover = icon.texture_normal
+			icon.texture_pressed = icon.texture_normal
 			icon.pressed.connect(func(): _play(genio_player))
 			row.add_child(icon)
 			var info = VBoxContainer.new()
@@ -632,7 +639,9 @@ func _check_achievements() -> void:
 		var id = int(item.id)
 		var condition_met = points >= int(item.points)
 		if int(item.get("nft_id", 0)) == 16:
-			condition_met = selected_genio_points >= int(item.points)
+			# El logro 8 se desbloquea justo al llegar a 3000 puntos ganados
+			# mientras el NFT 16 está equipado.
+			condition_met = selected_nft_id == 16 and selected_genio_points >= int(item.points)
 		if condition_met and not achievements_unlocked.has(id):
 			achievements_unlocked.append(id)
 			_show_achievement(item)
