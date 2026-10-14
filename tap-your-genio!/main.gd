@@ -120,8 +120,10 @@ func _make_audio_players() -> void:
 	if background_audio:
 		background_audio_player.stream = background_audio
 		background_audio_player.volume_db = -24.0
-		background_audio_player.finished.connect(func(): background_audio_player.play())
-		background_audio_player.play()
+		background_audio_player.finished.connect(func():
+			if selected_nft_id == 16 and not background_audio_player.playing:
+				background_audio_player.play()
+		)
 
 func _play(player: AudioStreamPlayer) -> void:
 	if player.stream:
@@ -533,7 +535,8 @@ func _refresh_store() -> void:
 			row.add_theme_constant_override("separation", 10)
 			store_list.add_child(row)
 			var icon = TextureButton.new()
-			icon.custom_minimum_size = Vector2(64, 64)
+			icon.custom_minimum_size = Vector2(80, 80)
+			icon.size = Vector2(80, 80)
 			icon.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 			icon.texture_normal = load(NFT_DIR + str(item.file))
 			icon.pressed.connect(func(): _play(genio_player))
@@ -612,14 +615,24 @@ func _update_equipped_nft() -> void:
 				click_button.texture_pressed = texture
 			if is_instance_valid(equipped_nft_label):
 				equipped_nft_label.text = "NFT equipado: " + str(item.name)
+			_sync_genio16_audio()
 			return
+
+func _sync_genio16_audio() -> void:
+	if not is_instance_valid(background_audio_player) or background_audio_player.stream == null:
+		return
+	if selected_nft_id == 16:
+		if not background_audio_player.playing:
+			background_audio_player.play()
+	else:
+		background_audio_player.stop()
 
 func _check_achievements() -> void:
 	for item in achievements:
 		var id = int(item.id)
 		var condition_met = points >= int(item.points)
 		if int(item.get("nft_id", 0)) == 16:
-			condition_met = selected_genio_points >= int(item.points) and selected_nft_id == 16
+			condition_met = selected_genio_points >= int(item.points)
 		if condition_met and not achievements_unlocked.has(id):
 			achievements_unlocked.append(id)
 			_show_achievement(item)
