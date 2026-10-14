@@ -143,6 +143,8 @@ func _build_game() -> void:
 	game_layer = Control.new()
 	game_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	add_child(game_layer)
+
+	# NFT como fondo/clicker a pantalla completa.
 	click_button = TextureButton.new()
 	click_button.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	click_button.texture_normal = genio_texture
@@ -152,101 +154,101 @@ func _build_game() -> void:
 	click_button.pressed.connect(_on_genio_click)
 	game_layer.add_child(click_button)
 
-	var hud = PanelContainer.new()
-	hud.set_anchors_preset(Control.PRESET_TOP_WIDE)
-	hud.offset_left = 12
-	hud.offset_top = 12
-	hud.offset_right = -12
-	hud.offset_bottom = 76
-	hud.mouse_filter = Control.MOUSE_FILTER_PASS
-	game_layer.add_child(hud)
-	var nav = HBoxContainer.new()
-	nav.add_theme_constant_override("separation", 10)
-	hud.add_child(nav)
-	var heading = Label.new()
-	heading.text = "TAP YOUR GENIO!"
-	heading.add_theme_font_size_override("font_size", 22)
-	heading.add_theme_color_override("font_color", Color("#ffe66d"))
-	nav.add_child(heading)
-	var gap = Control.new()
-	gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	nav.add_child(gap)
+	# Botón MENÚ arriba a la izquierda, como en la referencia.
+	var menu_button = _make_button("MENU", 24)
+	menu_button.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	menu_button.position = Vector2(18, 12)
+	menu_button.custom_minimum_size = Vector2(150, 58)
+	menu_button.z_index = 8
+	menu_button.pressed.connect(_show_menu)
+	game_layer.add_child(menu_button)
+
+	# Navegación arriba a la derecha.
+	var right_nav = HBoxContainer.new()
+	right_nav.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	right_nav.position = Vector2(-430, 12)
+	right_nav.add_theme_constant_override("separation", 10)
+	right_nav.z_index = 8
+	game_layer.add_child(right_nav)
 	points_label = Label.new()
 	points_label.text = "GENIOPUNTOS: 0"
+	points_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	points_label.add_theme_font_size_override("font_size", 20)
-	points_label.add_theme_color_override("font_color", Color.WHITE)
-	nav.add_child(points_label)
-	var shop_button = _make_button("TIENDA", 15)
+	points_label.add_theme_color_override("font_color", Color("#1685ad"))
+	right_nav.add_child(points_label)
+	var shop_button = _make_button("TIENDA", 24)
+	shop_button.custom_minimum_size = Vector2(145, 58)
 	shop_button.pressed.connect(_show_shop)
-	nav.add_child(shop_button)
-	var achievements_button = _make_button("LOGROS", 15)
+	right_nav.add_child(shop_button)
+	var achievements_button = _make_button("LOGROS", 20)
+	achievements_button.custom_minimum_size = Vector2(125, 58)
 	achievements_button.pressed.connect(_show_achievements)
-	nav.add_child(achievements_button)
-	var menu_button = _make_button("MENÚ", 15)
-	menu_button.pressed.connect(_show_menu)
-	nav.add_child(menu_button)
+	right_nav.add_child(achievements_button)
 
 	status_label = Label.new()
 	status_label.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
 	status_label.offset_left = 12
-	status_label.offset_top = -42
+	status_label.offset_top = -48
 	status_label.offset_right = -12
 	status_label.offset_bottom = -10
 	status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	status_label.add_theme_font_size_override("font_size", 16)
+	status_label.add_theme_font_size_override("font_size", 18)
 	status_label.add_theme_color_override("font_color", Color.WHITE)
 	status_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	status_label.z_index = 6
 	game_layer.add_child(status_label)
 
+	# Tung Sahur pequeño superpuesto en la esquina inferior derecha.
 	owned_tung_button = TextureButton.new()
 	owned_tung_button.texture_normal = tungs_texture
 	owned_tung_button.texture_hover = tungs_texture
 	owned_tung_button.texture_pressed = tungs_texture
-	owned_tung_button.custom_minimum_size = Vector2(86, 86)
+	owned_tung_button.custom_minimum_size = Vector2(100, 100)
 	owned_tung_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-	owned_tung_button.tooltip_text = "Tungtungsahur"
-	owned_tung_button.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	owned_tung_button.position = Vector2(-108, 104)
+	owned_tung_button.tooltip_text = "Tung Sahur"
+	owned_tung_button.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+	owned_tung_button.position = Vector2(-126, -112)
 	owned_tung_button.visible = false
-	owned_tung_button.z_index = 5
+	owned_tung_button.z_index = 7
 	owned_tung_button.pressed.connect(func(): _play(tungs_player))
 	game_layer.add_child(owned_tung_button)
 
+	# Pantalla de tienda.
 	var shop_overlay = ColorRect.new()
 	shop_overlay.name = "ShopOverlay"
 	shop_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	shop_overlay.color = Color(0.035, 0.035, 0.09, 0.96)
+	shop_overlay.color = Color(0.035, 0.035, 0.09, 0.97)
 	shop_overlay.visible = false
 	shop_overlay.z_index = 10
 	game_layer.add_child(shop_overlay)
 	var shop_root = VBoxContainer.new()
 	shop_root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	shop_root.offset_left = 28
-	shop_root.offset_top = 22
-	shop_root.offset_right = -28
-	shop_root.offset_bottom = -22
-	shop_root.add_theme_constant_override("separation", 12)
+	shop_root.offset_left = 42
+	shop_root.offset_top = 32
+	shop_root.offset_right = -42
+	shop_root.offset_bottom = -32
+	shop_root.add_theme_constant_override("separation", 16)
 	shop_overlay.add_child(shop_root)
 	var shop_header = HBoxContainer.new()
 	shop_root.add_child(shop_header)
 	var shop_title = Label.new()
 	shop_title.text = "TIENDA"
-	shop_title.add_theme_font_size_override("font_size", 30)
+	shop_title.add_theme_font_size_override("font_size", 36)
 	shop_title.add_theme_color_override("font_color", Color("#ffe66d"))
 	shop_header.add_child(shop_title)
 	var shop_spacer = Control.new()
 	shop_spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	shop_header.add_child(shop_spacer)
-	var back_from_shop = _make_button("VOLVER AL JUEGO", 15)
+	var back_from_shop = _make_button("VOLVER AL JUEGO", 20)
 	back_from_shop.pressed.connect(_show_gameplay)
 	shop_header.add_child(back_from_shop)
 	var tabs = HBoxContainer.new()
-	tabs.add_theme_constant_override("separation", 10)
+	tabs.add_theme_constant_override("separation", 12)
 	shop_root.add_child(tabs)
-	var upgrades_tab = _make_button("INCREMENTADORES", 14)
+	var upgrades_tab = _make_button("INCREMENTADORES", 18)
 	upgrades_tab.pressed.connect(func(): current_tab = "Incrementadores"; _refresh_store())
 	tabs.add_child(upgrades_tab)
-	var nfts_tab = _make_button("GENIOS (NFT)", 14)
+	var nfts_tab = _make_button("GENIOS (NFT)", 18)
 	nfts_tab.pressed.connect(func(): current_tab = "GENIOS"; _refresh_store())
 	tabs.add_child(nfts_tab)
 	var shop_scroll = ScrollContainer.new()
@@ -254,9 +256,10 @@ func _build_game() -> void:
 	shop_root.add_child(shop_scroll)
 	store_list = VBoxContainer.new()
 	store_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	store_list.add_theme_constant_override("separation", 10)
+	store_list.add_theme_constant_override("separation", 12)
 	shop_scroll.add_child(store_list)
 
+	# Pantalla de logros.
 	var achievements_overlay = ColorRect.new()
 	achievements_overlay.name = "AchievementsOverlay"
 	achievements_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -266,23 +269,23 @@ func _build_game() -> void:
 	game_layer.add_child(achievements_overlay)
 	var achievements_root = VBoxContainer.new()
 	achievements_root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	achievements_root.offset_left = 28
-	achievements_root.offset_top = 22
-	achievements_root.offset_right = -28
-	achievements_root.offset_bottom = -22
-	achievements_root.add_theme_constant_override("separation", 12)
+	achievements_root.offset_left = 42
+	achievements_root.offset_top = 32
+	achievements_root.offset_right = -42
+	achievements_root.offset_bottom = -32
+	achievements_root.add_theme_constant_override("separation", 16)
 	achievements_overlay.add_child(achievements_root)
 	var achievements_header = HBoxContainer.new()
 	achievements_root.add_child(achievements_header)
 	var achievements_title = Label.new()
 	achievements_title.text = "LOGROS"
-	achievements_title.add_theme_font_size_override("font_size", 30)
+	achievements_title.add_theme_font_size_override("font_size", 36)
 	achievements_title.add_theme_color_override("font_color", Color("#ffe66d"))
 	achievements_header.add_child(achievements_title)
 	var achievements_spacer = Control.new()
 	achievements_spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	achievements_header.add_child(achievements_spacer)
-	var back_from_achievements = _make_button("VOLVER AL JUEGO", 15)
+	var back_from_achievements = _make_button("VOLVER AL JUEGO", 20)
 	back_from_achievements.pressed.connect(_show_gameplay)
 	achievements_header.add_child(back_from_achievements)
 	var achievements_scroll = ScrollContainer.new()
@@ -291,16 +294,17 @@ func _build_game() -> void:
 	var achievements_list = VBoxContainer.new()
 	achievements_list.name = "AchievementsList"
 	achievements_list.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	achievements_list.add_theme_constant_override("separation", 10)
+	achievements_list.add_theme_constant_override("separation", 12)
 	achievements_scroll.add_child(achievements_list)
 
 	achievement_popup = PanelContainer.new()
 	achievement_popup.visible = false
 	achievement_popup.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP)
-	achievement_popup.position = Vector2(-190, 85)
+	achievement_popup.position = Vector2(-190, 100)
 	achievement_popup.custom_minimum_size = Vector2(380, 125)
 	achievement_popup.z_index = 30
 	game_layer.add_child(achievement_popup)
+
 	_update_equipped_nft()
 	_refresh_store()
 	_refresh_achievements_view()
