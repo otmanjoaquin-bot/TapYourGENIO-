@@ -602,7 +602,7 @@ func _show_achievement(item: Dictionary) -> void:
 	icon.custom_minimum_size = Vector2(100, 100)
 	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	icon.texture = load(ACH_DIR + str(item.id) + "-logro " + str(item.points) + ".jpg")
+	icon.texture = load(ACH_DIR + str(item.get("image", str(item.id) + "-logro " + str(item.points) + ".jpg")))
 	row.add_child(icon)
 	var text_col = VBoxContainer.new()
 	row.add_child(text_col)
