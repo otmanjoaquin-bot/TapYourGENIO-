@@ -28,6 +28,8 @@ var sound_player: AudioStreamPlayer
 var genio_player: AudioStreamPlayer
 var tungs_player: AudioStreamPlayer
 var tnt_player: AudioStreamPlayer
+var background_audio_player: AudioStreamPlayer
+var selected_genio_clicks: int = 0
 var click_button: TextureButton
 var equipped_nft_label: Label
 var owned_tung_button: TextureButton
@@ -58,13 +60,15 @@ var nfts := [
 	{"id": 12, "name": "God", "price": 25000, "file": "12-god.jpg"},
 	{"id": 13, "name": "Genio HD", "price": 40000, "file": "13-geniohd.jpg"},
 	{"id": 14, "name": "Iñarandu", "price": 65000, "file": "14-iñarandu.jpg"},
-	{"id": 15, "name": "Genius", "price": 100000, "file": "15-genius.jpg"}
+	{"id": 15, "name": "Genius", "price": 100000, "file": "15-genius.jpg"},
+	{"id": 16, "name": "Genio 16", "price": 150000, "file": "16-genio.jpg"}
 ]
 var achievements := [
 	{"id": 1, "points": 10, "name": "Primeros 10"},
 	{"id": 2, "points": 100, "name": "Centenario"},
 	{"id": 3, "points": 1000, "name": "Mil puntos"},
-	{"id": 4, "points": 10000, "name": "Diez mil"}
+	{"id": 4, "points": 10000, "name": "Diez mil"},
+	{"id": 5, "points": 3000, "name": "Genio 16: 3000 puntos", "nft_id": 16}
 ]
 
 func _ready() -> void:
@@ -85,12 +89,19 @@ func _make_audio_players() -> void:
 	genio_player = AudioStreamPlayer.new()
 	tungs_player = AudioStreamPlayer.new()
 	tnt_player = AudioStreamPlayer.new()
-	for player in [sound_player, genio_player, tungs_player, tnt_player]:
+	background_audio_player = AudioStreamPlayer.new()
+	for player in [sound_player, genio_player, tungs_player, tnt_player, background_audio_player]:
 		add_child(player)
 	genio_player.stream = load(SFX_DIR + "Genio.mp3")
 	tungs_player.stream = load(SFX_DIR + "audioparagolpedetungsahur.mp3")
 	tnt_player.stream = load(SFX_DIR + "explosion de la tnt.mp3")
 	sound_player.stream = load(SFX_DIR + "Genio.mp3")
+	var background_audio = load(SFX_DIR + "extrated audio.mp3")
+	if background_audio:
+		background_audio_player.stream = background_audio
+		background_audio_player.volume_db = -24.0
+		background_audio_player.finished.connect(func(): background_audio_player.play())
+		background_audio_player.play()
 
 func _play(player: AudioStreamPlayer) -> void:
 	if player.stream:
@@ -421,8 +432,10 @@ func _on_genio_click() -> void:
 		_show_explosion()
 		_play(tnt_player)
 	points += earned * multiplier
-	_play(genio_player)
+	if selected_nft_id == 16:
+		selected_genio_clicks += earned * multiplier
 	_check_achievements()
+	_play(genio_player)
 	_update_counter()
 
 func _show_explosion() -> void:
@@ -566,7 +579,10 @@ func _update_equipped_nft() -> void:
 func _check_achievements() -> void:
 	for item in achievements:
 		var id = int(item.id)
-		if points >= int(item.points) and not achievements_unlocked.has(id):
+		var condition_met = points >= int(item.points)
+		if int(item.get("nft_id", 0)) == 16:
+			condition_met = selected_genio_clicks >= int(item.points) and selected_nft_id == 16
+		if condition_met and not achievements_unlocked.has(id):
 			achievements_unlocked.append(id)
 			_show_achievement(item)
 
