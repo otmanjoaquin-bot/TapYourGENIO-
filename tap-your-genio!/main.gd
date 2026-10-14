@@ -5,7 +5,7 @@ const NFT_DIR = ROOT + "Nfts/"
 const UPGRADE_DIR = ROOT + "incrementos-efectos/"
 const ACH_DIR = ROOT + "logros/"
 const SFX_DIR = ROOT + "sonidos/"
-const INTRO_VIDEO = "res://inicio/Pollo caminando con Mecha Mecha de fondo.mp4"
+const INTRO_VIDEO = "res://inicio/Pollo-caminando-con-Mecha-Mecha-de-fondo.ogv"
 
 var points: int = 0
 var taps: int = 0
@@ -147,6 +147,10 @@ func _build_game() -> void:
 	# NFT como fondo/clicker a pantalla completa.
 	click_button = TextureButton.new()
 	click_button.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	click_button.offset_left = 65
+	click_button.offset_top = 52
+	click_button.offset_right = -65
+	click_button.offset_bottom = -52
 	click_button.texture_normal = genio_texture
 	click_button.texture_hover = genio_texture
 	click_button.texture_pressed = genio_texture
@@ -198,7 +202,7 @@ func _build_game() -> void:
 	status_label.z_index = 6
 	game_layer.add_child(status_label)
 
-	# Tung Sahur pequeño superpuesto en la esquina inferior derecha.
+	# Tung Sahur pequeño superpuesto como botón en la esquina inferior izquierda.
 	owned_tung_button = TextureButton.new()
 	owned_tung_button.texture_normal = tungs_texture
 	owned_tung_button.texture_hover = tungs_texture
@@ -206,8 +210,8 @@ func _build_game() -> void:
 	owned_tung_button.custom_minimum_size = Vector2(100, 100)
 	owned_tung_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 	owned_tung_button.tooltip_text = "Tung Sahur"
-	owned_tung_button.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
-	owned_tung_button.position = Vector2(-126, -112)
+	owned_tung_button.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	owned_tung_button.position = Vector2(18, -112)
 	owned_tung_button.visible = false
 	owned_tung_button.z_index = 7
 	owned_tung_button.pressed.connect(func(): _play(tungs_player))
