@@ -286,6 +286,7 @@ func _on_genio_click() -> void:
 		_play(tnt_player)
 	points += earned * multiplier
 	_play(genio_player)
+	_play(tungs_player)
 	_check_achievements()
 	_update_counter()
 
@@ -345,11 +346,11 @@ func _refresh_store() -> void:
 			var row = HBoxContainer.new()
 			row.add_theme_constant_override("separation", 10)
 			store_list.add_child(row)
-			var icon = TextureRect.new()
+			var icon = TextureButton.new()
 			icon.custom_minimum_size = Vector2(64, 64)
-			icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-			icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-			icon.texture = load(NFT_DIR + str(item.file))
+			icon.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+			icon.texture_normal = load(NFT_DIR + str(item.file))
+			icon.pressed.connect(func(): _play(genio_player))
 			row.add_child(icon)
 			var info = VBoxContainer.new()
 			info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
