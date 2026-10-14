@@ -147,10 +147,6 @@ func _build_game() -> void:
 	# NFT como fondo/clicker a pantalla completa.
 	click_button = TextureButton.new()
 	click_button.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	click_button.offset_left = 65
-	click_button.offset_top = 52
-	click_button.offset_right = -65
-	click_button.offset_bottom = -52
 	click_button.texture_normal = genio_texture
 	click_button.texture_hover = genio_texture
 	click_button.texture_pressed = genio_texture
@@ -158,36 +154,34 @@ func _build_game() -> void:
 	click_button.pressed.connect(_on_genio_click)
 	game_layer.add_child(click_button)
 
-	# Botón MENÚ arriba a la izquierda, como en la referencia.
-	var menu_button = _make_button("MENU", 24)
-	menu_button.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	menu_button.position = Vector2(18, 12)
-	menu_button.custom_minimum_size = Vector2(150, 58)
-	menu_button.z_index = 8
+	# Navigation buttons centered over the full-screen NFT.
+	var nav_center = CenterContainer.new()
+	nav_center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	nav_center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	nav_center.z_index = 8
+	game_layer.add_child(nav_center)
+	var nav_row = HBoxContainer.new()
+	nav_row.add_theme_constant_override("separation", 18)
+	nav_row.mouse_filter = Control.MOUSE_FILTER_STOP
+	nav_center.add_child(nav_row)
+	var menu_button = _make_button("MENU", 22)
+	menu_button.custom_minimum_size = Vector2(160, 64)
 	menu_button.pressed.connect(_show_menu)
-	game_layer.add_child(menu_button)
-
-	# Navegación arriba a la derecha.
-	var right_nav = HBoxContainer.new()
-	right_nav.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	right_nav.position = Vector2(-430, 12)
-	right_nav.add_theme_constant_override("separation", 10)
-	right_nav.z_index = 8
-	game_layer.add_child(right_nav)
+	nav_row.add_child(menu_button)
 	points_label = Label.new()
 	points_label.text = "GENIOPUNTOS: 0"
 	points_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	points_label.add_theme_font_size_override("font_size", 20)
+	points_label.add_theme_font_size_override("font_size", 22)
 	points_label.add_theme_color_override("font_color", Color("#1685ad"))
-	right_nav.add_child(points_label)
-	var shop_button = _make_button("TIENDA", 24)
-	shop_button.custom_minimum_size = Vector2(145, 58)
+	nav_row.add_child(points_label)
+	var shop_button = _make_button("TIENDA", 22)
+	shop_button.custom_minimum_size = Vector2(160, 64)
 	shop_button.pressed.connect(_show_shop)
-	right_nav.add_child(shop_button)
-	var achievements_button = _make_button("LOGROS", 20)
-	achievements_button.custom_minimum_size = Vector2(125, 58)
+	nav_row.add_child(shop_button)
+	var achievements_button = _make_button("LOGROS", 22)
+	achievements_button.custom_minimum_size = Vector2(160, 64)
 	achievements_button.pressed.connect(_show_achievements)
-	right_nav.add_child(achievements_button)
+	nav_row.add_child(achievements_button)
 
 	status_label = Label.new()
 	status_label.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
@@ -211,7 +205,10 @@ func _build_game() -> void:
 	owned_tung_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 	owned_tung_button.tooltip_text = "Tung Sahur"
 	owned_tung_button.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	owned_tung_button.position = Vector2(18, -112)
+	owned_tung_button.offset_left = 24
+	owned_tung_button.offset_top = -124
+	owned_tung_button.offset_right = 124
+	owned_tung_button.offset_bottom = -24
 	owned_tung_button.visible = false
 	owned_tung_button.z_index = 7
 	owned_tung_button.pressed.connect(func(): _play(tungs_player))
