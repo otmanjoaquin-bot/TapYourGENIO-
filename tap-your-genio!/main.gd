@@ -105,6 +105,7 @@ func _build_menu() -> void:
 	video_player.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	video_player.expand = true
 	video_player.autoplay = true
+	video_player.audio_track = 0
 	var video = load(INTRO_VIDEO)
 	if video:
 		video_player.stream = video
@@ -135,7 +136,7 @@ func _build_menu() -> void:
 	start.pressed.connect(_start_game)
 	panel.add_child(start)
 	var quit = _make_button("SALIR", 20)
-	quit.pressed.connect(func(): _play(sound_player); get_tree().quit())
+	quit.pressed.connect(func(): get_tree().quit())
 	panel.add_child(quit)
 
 func _build_game() -> void:
