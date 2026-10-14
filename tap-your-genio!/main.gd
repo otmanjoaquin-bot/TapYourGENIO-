@@ -29,7 +29,7 @@ var genio_player: AudioStreamPlayer
 var tungs_player: AudioStreamPlayer
 var tnt_player: AudioStreamPlayer
 var background_audio_player: AudioStreamPlayer
-var selected_genio_clicks: int = 0
+var selected_genio_points: int = 0
 var click_button: TextureButton
 var equipped_nft_label: Label
 var owned_tung_button: TextureButton
@@ -61,14 +61,16 @@ var nfts := [
 	{"id": 13, "name": "Genio HD", "price": 40000, "file": "13-geniohd.jpg"},
 	{"id": 14, "name": "Iñarandu", "price": 65000, "file": "14-iñarandu.jpg"},
 	{"id": 15, "name": "Genius", "price": 100000, "file": "15-genius.jpg"},
-	{"id": 16, "name": "Genio 16", "price": 150000, "file": "16-genio.jpg"}
+	{"id": 16, "name": "Genio 16", "price": 150000, "file": "16-genio tierra prometida.jpg"}
 ]
 var achievements := [
-	{"id": 1, "points": 10, "name": "Primeros 10"},
-	{"id": 2, "points": 100, "name": "Centenario"},
-	{"id": 3, "points": 1000, "name": "Mil puntos"},
-	{"id": 4, "points": 10000, "name": "Diez mil"},
-	{"id": 5, "points": 3000, "name": "Genio 16: 3000 puntos", "nft_id": 16}
+	{"id": 1, "points": 10, "name": "Primeros 10", "image": "1-logro 10.jpg"},
+	{"id": 2, "points": 100, "name": "Centenario", "image": "2-logro 100.jpg"},
+	{"id": 3, "points": 1000, "name": "Mil puntos", "image": "3-logro 1000.jpg"},
+	{"id": 4, "points": 10000, "name": "Diez mil", "image": "4-logro 10000.jpg"},
+	{"id": 5, "points": 100000, "name": "Cien mil", "image": "5-logro 100000.jpg"},
+	{"id": 6, "points": 1000000, "name": "Un millón", "image": "6-logro 1000000.jpg"},
+	{"id": 7, "points": 3000, "name": "Genio 16: 3000 puntos", "nft_id": 16, "image": "3-logro 1000.jpg"}
 ]
 
 func _ready() -> void:
@@ -96,7 +98,7 @@ func _make_audio_players() -> void:
 	tungs_player.stream = load(SFX_DIR + "audioparagolpedetungsahur.mp3")
 	tnt_player.stream = load(SFX_DIR + "explosion de la tnt.mp3")
 	sound_player.stream = load(SFX_DIR + "Genio.mp3")
-	var background_audio = load(SFX_DIR + "extrated audio.mp3")
+	var background_audio = load(SFX_DIR + "extracted-audio.mp3")
 	if background_audio:
 		background_audio_player.stream = background_audio
 		background_audio_player.volume_db = -24.0
@@ -408,7 +410,7 @@ func _refresh_achievements_view() -> void:
 		icon.custom_minimum_size = Vector2(92, 92)
 		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon.texture = load(ACH_DIR + str(item.id) + "-logro " + str(item.points) + ".jpg")
+		icon.texture = load(ACH_DIR + str(item.get("image", str(item.id) + "-logro " + str(item.points) + ".jpg")))
 		icon.modulate = Color.WHITE if achievements_unlocked.has(int(item.id)) else Color(0.28, 0.28, 0.32, 1.0)
 		row.add_child(icon)
 		var info = VBoxContainer.new()
@@ -433,7 +435,7 @@ func _on_genio_click() -> void:
 		_play(tnt_player)
 	points += earned * multiplier
 	if selected_nft_id == 16:
-		selected_genio_clicks += earned * multiplier
+		selected_genio_points += earned * multiplier
 	_check_achievements()
 	_play(genio_player)
 	_update_counter()
@@ -581,7 +583,7 @@ func _check_achievements() -> void:
 		var id = int(item.id)
 		var condition_met = points >= int(item.points)
 		if int(item.get("nft_id", 0)) == 16:
-			condition_met = selected_genio_clicks >= int(item.points) and selected_nft_id == 16
+			condition_met = selected_genio_points >= int(item.points) and selected_nft_id == 16
 		if condition_met and not achievements_unlocked.has(id):
 			achievements_unlocked.append(id)
 			_show_achievement(item)
