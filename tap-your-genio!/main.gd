@@ -156,7 +156,11 @@ func _build_game() -> void:
 
 	# Navigation buttons centered over the full-screen NFT.
 	var nav_center = CenterContainer.new()
-	nav_center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	nav_center.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	nav_center.offset_left = 0
+	nav_center.offset_top = 12
+	nav_center.offset_right = 0
+	nav_center.offset_bottom = 88
 	nav_center.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	nav_center.z_index = 8
 	game_layer.add_child(nav_center)
@@ -201,14 +205,12 @@ func _build_game() -> void:
 	owned_tung_button.texture_normal = tungs_texture
 	owned_tung_button.texture_hover = tungs_texture
 	owned_tung_button.texture_pressed = tungs_texture
-	owned_tung_button.custom_minimum_size = Vector2(100, 100)
+	owned_tung_button.custom_minimum_size = Vector2(42, 42)
 	owned_tung_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 	owned_tung_button.tooltip_text = "Tung Sahur"
-	owned_tung_button.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
-	owned_tung_button.offset_left = 24
-	owned_tung_button.offset_top = -124
-	owned_tung_button.offset_right = 124
-	owned_tung_button.offset_bottom = -24
+	owned_tung_button.set_anchors_preset(Control.PRESET_TOP_LEFT)
+	owned_tung_button.position = Vector2(18, 12)
+	owned_tung_button.size = Vector2(42, 42)
 	owned_tung_button.visible = false
 	owned_tung_button.z_index = 7
 	owned_tung_button.pressed.connect(func(): _play(tungs_player))
