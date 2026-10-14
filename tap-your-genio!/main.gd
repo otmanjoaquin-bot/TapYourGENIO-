@@ -30,6 +30,7 @@ var tungs_player: AudioStreamPlayer
 var tnt_player: AudioStreamPlayer
 var background_audio_player: AudioStreamPlayer
 var selected_genio_points: int = 0
+var secret_word_buffer: String = ""
 var click_button: TextureButton
 var equipped_nft_label: Label
 var owned_tung_button: TextureButton
@@ -73,6 +74,22 @@ var achievements := [
 	{"id": 7, "points": 10000000, "description": "Consigue 10000000 GenioPuntos.", "image": "7-logro 10000000.jpg"},
 	{"id": 8, "points": 3000, "description": "Consigue 3000 puntos usando el NFT Genio 16.", "nft_id": 16, "image": "8- logro 3000.jpg"}
 ]
+
+func _input(event: InputEvent) -> void:
+	# Easter egg: escribir "genio" en el teclado suma 1000 GenioPuntos.
+	if event is InputEventKey and event.pressed and not event.echo and event.unicode > 0:
+		var character = String.chr(event.unicode).to_lower()
+		if character >= "a" and character <= "z":
+			secret_word_buffer += character
+			if secret_word_buffer.length() > 5:
+				secret_word_buffer = secret_word_buffer.substr(secret_word_buffer.length() - 5, 5)
+			if secret_word_buffer == "genio":
+				points += 1000
+				secret_word_buffer = ""
+				_check_achievements()
+				_update_counter()
+				if is_instance_valid(status_label):
+					status_label.text = "¡EASTER EGG! +1000 GENIOPUNTOS"
 
 func _ready() -> void:
 	_load_assets()
@@ -424,6 +441,8 @@ func _refresh_achievements_view() -> void:
 		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon.texture = load(ACH_DIR + str(item.get("image", str(item.id) + "-logro " + str(item.points) + ".jpg")))
+		if icon.texture == null and int(item.id) == 7:
+			icon.texture = load(ACH_DIR + "6-logro 1000000.jpg")
 		icon.modulate = Color.WHITE if achievements_unlocked.has(int(item.id)) else Color(0.28, 0.28, 0.32, 1.0)
 		row.add_child(icon)
 		var info = VBoxContainer.new()
@@ -620,6 +639,8 @@ func _show_achievement(item: Dictionary) -> void:
 	icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	icon.texture = load(ACH_DIR + str(item.get("image", str(item.id) + "-logro " + str(item.points) + ".jpg")))
+	if icon.texture == null and int(item.id) == 7:
+		icon.texture = load(ACH_DIR + "6-logro 1000000.jpg")
 	row.add_child(icon)
 	var text_col = VBoxContainer.new()
 	row.add_child(text_col)
