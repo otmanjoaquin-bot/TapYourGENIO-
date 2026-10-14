@@ -29,6 +29,10 @@ var genio_player: AudioStreamPlayer
 var tungs_player: AudioStreamPlayer
 var tnt_player: AudioStreamPlayer
 var click_button: TextureButton
+var equipped_nft_label: Label
+var owned_tung_button: TextureButton
+var achievement_tween: Tween
+var selected_nft_id: int = 1
 var genio_texture: Texture2D
 var tungs_texture: Texture2D
 var tnt_texture: Texture2D
@@ -179,7 +183,7 @@ func _build_game() -> void:
 	root.add_child(main_area)
 	# Character on the left
 	var character_panel = PanelContainer.new()
-	character_panel.custom_minimum_size = Vector2(210, 0)
+	character_panel.custom_minimum_size = Vector2(440, 0)
 	main_area.add_child(character_panel)
 	var character_col = VBoxContainer.new()
 	character_col.alignment = BoxContainer.ALIGNMENT_CENTER
@@ -190,22 +194,36 @@ func _build_game() -> void:
 	char_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	character_col.add_child(char_title)
 	click_button = TextureButton.new()
-	click_button.texture_normal = tungs_texture
-	click_button.texture_hover = tungs_texture
-	click_button.texture_pressed = tungs_texture
-	click_button.custom_minimum_size = Vector2(170, 170)
+	click_button.texture_normal = genio_texture
+	click_button.texture_hover = genio_texture
+	click_button.texture_pressed = genio_texture
+	click_button.custom_minimum_size = Vector2(300, 300)
 	click_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
 	click_button.pressed.connect(_on_genio_click)
 	character_col.add_child(click_button)
+	equipped_nft_label = Label.new()
+	equipped_nft_label.text = "NFT equipado: Genio"
+	equipped_nft_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	character_col.add_child(equipped_nft_label)
+	owned_tung_button = TextureButton.new()
+	owned_tung_button.texture_normal = tungs_texture
+	owned_tung_button.texture_hover = tungs_texture
+	owned_tung_button.texture_pressed = tungs_texture
+	owned_tung_button.custom_minimum_size = Vector2(58, 58)
+	owned_tung_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	owned_tung_button.tooltip_text = "Tungtungsahur: personaje comprado"
+	owned_tung_button.visible = false
+	owned_tung_button.pressed.connect(func(): _play(tungs_player))
+	character_col.add_child(owned_tung_button)
 	var char_help = Label.new()
-	char_help.text = "Tungtungsahur
-está a tu izquierda"
+	char_help.text = "Hacé click en el NFT para ganar puntos"
 	char_help.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	char_help.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	character_col.add_child(char_help)
 	# Store in the middle
 	var shop_panel = PanelContainer.new()
 	shop_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	shop_panel.custom_minimum_size = Vector2(360, 0)
+	shop_panel.custom_minimum_size = Vector2(520, 0)
 	main_area.add_child(shop_panel)
 	var shop_col = VBoxContainer.new()
 	shop_col.add_theme_constant_override("separation", 8)
@@ -240,6 +258,7 @@ está a tu izquierda"
 	achievement_popup.custom_minimum_size = Vector2(380, 125)
 	achievement_popup.z_index = 20
 	game_layer.add_child(achievement_popup)
+	_update_equipped_nft()
 	_refresh_store()
 	_update_counter()
 
@@ -286,7 +305,6 @@ func _on_genio_click() -> void:
 		_play(tnt_player)
 	points += earned * multiplier
 	_play(genio_player)
-	_play(tungs_player)
 	_check_achievements()
 	_update_counter()
 
@@ -363,8 +381,13 @@ func _refresh_store() -> void:
 			info.add_child(desc)
 			var buy = _make_button("VER /\nCOMPRAR", 12)
 			buy.custom_minimum_size = Vector2(90, 55)
-			buy.disabled = unlocked.has(int(item.id)) or points < int(item.price)
-			buy.pressed.connect(func(): _buy_nft(item))
+			if unlocked.has(int(item.id)):
+				buy.text = "EQUIPAR" if int(item.id) != selected_nft_id else "EQUIPADO"
+				buy.disabled = int(item.id) == selected_nft_id
+			else:
+				buy.text = "COMPRAR\n" + str(item.price)
+				buy.disabled = points < int(item.price)
+			buy.pressed.connect(func(): _on_nft_action(item))
 			row.add_child(buy)
 	elif current_tab == "LOGROS":
 		for item in achievements:
@@ -404,6 +427,8 @@ func _buy_upgrade(item: Dictionary) -> void:
 	points -= price
 	if item.kind == "tung":
 		tung_count += 1
+		if is_instance_valid(owned_tung_button):
+			owned_tung_button.visible = true
 	elif item.kind == "tnt":
 		tnt_count += 1
 	else:
@@ -411,15 +436,38 @@ func _buy_upgrade(item: Dictionary) -> void:
 	_refresh_store()
 	_update_counter()
 
+func _on_nft_action(item: Dictionary) -> void:
+	var id = int(item.id)
+	if unlocked.has(id):
+		selected_nft_id = id
+		_update_equipped_nft()
+		_refresh_store()
+		return
+	_buy_nft(item)
+
 func _buy_nft(item: Dictionary) -> void:
 	var id = int(item.id)
 	if unlocked.has(id) or points < int(item.price):
 		return
 	points -= int(item.price)
 	unlocked.append(id)
+	selected_nft_id = id
+	_update_equipped_nft()
 	_play(genio_player)
 	_refresh_store()
 	_update_counter()
+
+func _update_equipped_nft() -> void:
+	for item in nfts:
+		if int(item.id) == selected_nft_id:
+			var texture = load(NFT_DIR + str(item.file)) as Texture2D
+			if texture and is_instance_valid(click_button):
+				click_button.texture_normal = texture
+				click_button.texture_hover = texture
+				click_button.texture_pressed = texture
+			if is_instance_valid(equipped_nft_label):
+				equipped_nft_label.text = "NFT equipado: " + str(item.name)
+			return
 
 func _check_achievements() -> void:
 	for item in achievements:
@@ -429,9 +477,13 @@ func _check_achievements() -> void:
 			_show_achievement(item)
 
 func _show_achievement(item: Dictionary) -> void:
+	if achievement_tween and achievement_tween.is_running():
+		achievement_tween.kill()
 	for child in achievement_popup.get_children():
 		child.queue_free()
 	achievement_popup.visible = true
+	achievement_popup.modulate.a = 0.0
+	achievement_popup.scale = Vector2(0.72, 0.72)
 	var row = HBoxContainer.new()
 	achievement_popup.add_child(row)
 	var icon = TextureRect.new()
@@ -449,10 +501,20 @@ func _show_achievement(item: Dictionary) -> void:
 	var desc = Label.new()
 	desc.text = str(item.name) + "\n" + str(item.points) + " puntos"
 	text_col.add_child(desc)
-	var timer = get_tree().create_timer(3.0)
-	timer.timeout.connect(func():
+	achievement_tween = create_tween()
+	achievement_tween.set_parallel(true)
+	achievement_tween.tween_property(achievement_popup, "modulate:a", 1.0, 0.22)
+	achievement_tween.tween_property(achievement_popup, "scale", Vector2.ONE, 0.34).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	achievement_tween.set_parallel(false)
+	achievement_tween.tween_interval(2.4)
+	achievement_tween.set_parallel(true)
+	achievement_tween.tween_property(achievement_popup, "modulate:a", 0.0, 0.3)
+	achievement_tween.tween_property(achievement_popup, "scale", Vector2(0.9, 0.9), 0.3)
+	achievement_tween.set_parallel(false)
+	achievement_tween.tween_callback(func():
 		if is_instance_valid(achievement_popup):
 			achievement_popup.visible = false
+			achievement_popup.scale = Vector2.ONE
 	)
 	_play(sound_player)
 
