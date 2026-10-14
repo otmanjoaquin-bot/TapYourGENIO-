@@ -67,10 +67,11 @@ var achievements := [
 	{"id": 1, "points": 10, "description": "Consigue 10 GenioPuntos.", "image": "1-logro 10.jpg"},
 	{"id": 2, "points": 100, "description": "Consigue 100 GenioPuntos.", "image": "2-logro 100.jpg"},
 	{"id": 3, "points": 1000, "description": "Consigue 1000 GenioPuntos.", "image": "3-logro 1000.jpg"},
-	{"id": 7, "points": 3000, "description": "Consigue 3000 GenioPuntos usando el NFT Genio 16.", "nft_id": 16, "image": "3-logro 1000.jpg"},
 	{"id": 4, "points": 10000, "description": "Consigue 10000 GenioPuntos.", "image": "4-logro 10000.jpg"},
 	{"id": 5, "points": 100000, "description": "Consigue 100000 GenioPuntos.", "image": "5-logro 100000.jpg"},
-	{"id": 6, "points": 1000000, "description": "Consigue 1000000 GenioPuntos.", "image": "6-logro 1000000.jpg"}
+	{"id": 6, "points": 1000000, "description": "Consigue 1000000 GenioPuntos.", "image": "6-logro 1000000.jpg"},
+	{"id": 7, "points": 10000000, "description": "Consigue 10000000 GenioPuntos.", "image": "7-logro 10000000.jpg"},
+	{"id": 8, "points": 3000, "description": "Consigue 3000 puntos usando el NFT Genio 16.", "nft_id": 16, "image": "8- logro 3000.jpg"}
 ]
 
 func _ready() -> void:
